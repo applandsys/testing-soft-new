@@ -1,0 +1,7 @@
+[27-Apr-2026 08:09:55 UTC] PHP Fatal error:  Uncaught RuntimeException: Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.4.0". You are running 8.2.29. in /home/multiway/public_html/vendor/composer/platform_check.php:22
+Stack trace:
+#0 /home/multiway/public_html/vendor/composer/autoload_real.php(25): require()
+#1 /home/multiway/public_html/vendor/autoload.php(22): ComposerAutoloaderInitc57754c93ae34ac3b9b716a0fd2f2149::getLoader()
+#2 /home/multiway/public_html/index.php(14): require('/home/multiway/...')
+#3 {main}
+  thrown in /home/multiway/public_html/vendor/composer/platform_check.php on line 22
