@@ -8,7 +8,7 @@
     <meta name="author" content="">
     <link rel="icon" href="https://medical-admin-template.multipurposethemes.com/images/favicon.ico">
 
-    <title>SGS LAB - Dashboard</title>
+    <title>IAEA LAB - Dashboard</title>
 
     <!-- Vendors Style-->
     <link rel="stylesheet" href="{{asset('theme/main-dark/css/vendors_css.css')}}">

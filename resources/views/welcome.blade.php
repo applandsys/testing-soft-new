@@ -71,7 +71,7 @@
 <!-- HERO -->
 <section class="hero text-center">
     <div class="container">
-        <h1 class="display-5 fw-bold">SGS Advanced  Laboratory Services</h1>
+        <h1 class="display-5 fw-bold">IAEA Advanced  Laboratory Services</h1>
         <p class="lead mt-3">Accurate, reliable & fast diagnostic solutions</p>
         <a href="#contact" class="btn btn-primary btn-lg mt-4">Book a Test</a>
     </div>
@@ -131,7 +131,7 @@
 <!-- Rest of sections here -->
 
 <footer class="bg-dark text-white text-center py-4">
-    <p class="mb-0">© 2026 SGS Testing Laboratory</p>
+    <p class="mb-0">© 2026 IAEA Testing Laboratory</p>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" href="https://medical-admin-template.multipurposethemes.com/images/favicon.ico">
-    <title> SGS Testing Lab </title>
+    <title> IAEA Testing Lab </title>
     <!-- Vendors Style-->
     <link rel="stylesheet" href="{{asset('theme/main-dark/css/vendors_css.css')}}">
     <!-- Style-->
