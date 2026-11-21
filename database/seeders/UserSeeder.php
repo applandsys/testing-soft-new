@@ -11,25 +11,25 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'name' => 'Mega',
-            'email' => 'mega@sgs.com',
-            'password' => Hash::make('24434'), // change in production
+            'name' => 'Lab Incharge',
+            'email' => 'labs@iaea.com',
+            'password' => Hash::make('Test@999'), // change in production
             'slug' => 'positive',
             'email_verified_at' => now(),
         ]);
 
         User::create([
             'name' => 'Max',
-            'email' => 'max@sgs.com',
-            'password' => Hash::make('24434'),
+            'email' => 'labn@iaea.com',
+            'password' => Hash::make('Test@999'),
             'slug' => 'negative',
             'email_verified_at' => now(),
         ]);
 
         User::create([
             'name' => 'Mega X',
-            'email' => 'megax@sgs.com',
-            'password' => Hash::make('24434'),
+            'email' => 'labp@iaea.com',
+            'password' => Hash::make('Test@999'),
             'slug' => 'pause',
             'email_verified_at' => now(),
         ]);
