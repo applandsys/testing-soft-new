@@ -4,7 +4,7 @@ The stack (`docker-compose.yml`) runs three containers:
 
 | Container | Image | Role |
 |-----------|-------|------|
-| `web` | built from `Dockerfile` (target `web`, Nginx) | Serves `/theme`, `/images`, `/sound`, `/build`, `/storage`; sends everything else to PHP |
+| `web` | built from `Dockerfile` (target `web`, Nginx) | Published on host port **5000**; serves `/theme`, `/images`, `/sound`, `/build`, `/storage`; sends everything else to PHP |
 | `app` | built from `Dockerfile` (target `app`, PHP 8.4-FPM) | Runs Laravel; runs migrations and `artisan optimize` on start |
 | `db` | `mysql:8.4` | Database, stored in the `db-data` volume, not exposed to the internet |
 
@@ -54,8 +54,10 @@ nano .env
 chmod 600 .env
 ```
 
-Set at least: `APP_KEY`, `APP_URL`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`, and mail
-settings if the app must send email (password reset).
+Set at least: `APP_KEY`, `DB_PASSWORD`, `DB_ROOT_PASSWORD`, and
+`APP_URL=http://SERVER_IP:5000` (your server's public IP; the port must match
+`HTTP_BIND`). Add mail settings if the app must send email (password reset).
+Leave `SESSION_SECURE_COOKIE=false`, since the site runs on plain http.
 
 > Keep `APP_KEY` the same forever once users exist; changing it logs everyone
 > out and breaks encrypted data.
@@ -68,7 +70,9 @@ docker compose ps            # all three should be "running"/"healthy"
 docker compose logs -f app   # watch migrations run
 ```
 
-Open `http://SERVER_IP/`. The health endpoint is `http://SERVER_IP/up`.
+Open `http://SERVER_IP:5000/`. The health endpoint is `http://SERVER_IP:5000/up`.
+If it doesn't load, check the cloud provider's firewall/security group allows
+inbound TCP 5000 (step 6).
 
 Create the first user by registering on the site, or with tinker:
 
@@ -93,42 +97,30 @@ docker compose cp ./old-storage-public/. app:/var/www/html/storage/app/public/
 docker compose exec app chown -R www-data:www-data storage
 ```
 
-## 6. HTTPS (recommended)
+## 6. Firewall and port 5000
 
-Docker-published ports bypass `ufw`, so run Nginx + Certbot on the host and
-keep the container on localhost only.
+The site is plain http on `http://SERVER_IP:5000` (no domain, no HTTPS).
 
-1. In `.env` set `HTTP_BIND=127.0.0.1:8080` and `SESSION_SECURE_COOKIE=true`,
-   and make sure `APP_URL` starts with `https://`. Then `docker compose up -d`.
-2. Point your domain's DNS A record to the server.
-3. On the host:
+- **Cloud firewall:** if the server is on a cloud provider (Hetzner, AWS,
+  DigitalOcean, etc.), allow inbound TCP **5000** and **22** in its firewall /
+  security group.
+- **On the server (optional):**
 
-```bash
-sudo apt install -y nginx certbot python3-certbot-nginx
-sudo tee /etc/nginx/sites-available/testing-soft > /dev/null <<'EOF'
-server {
-    listen 80;
-    server_name your-domain.com;
-    client_max_body_size 20m;
+  ```bash
+  sudo apt install -y ufw
+  sudo ufw allow OpenSSH
+  sudo ufw allow 5000/tcp
+  sudo ufw enable
+  ```
 
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header X-Forwarded-Host $host;
-        proxy_set_header X-Forwarded-Port $server_port;
-    }
-}
-EOF
-sudo ln -s /etc/nginx/sites-available/testing-soft /etc/nginx/sites-enabled/
-sudo rm -f /etc/nginx/sites-enabled/default
-sudo nginx -t && sudo systemctl reload nginx
-sudo certbot --nginx -d your-domain.com    # issues the certificate and auto-renews
-```
+  Note: Docker writes its own iptables rules, so a published port is reachable
+  even if `ufw` doesn't list it. Closing 5000 means changing `HTTP_BIND`, not
+  only `ufw`. MySQL is never published, so it stays private either way.
+- **Different port:** change both `HTTP_BIND` and the port in `APP_URL` in
+  `.env`, then `docker compose up -d`.
 
-Firewall (optional): `sudo apt install ufw && sudo ufw allow OpenSSH && sudo ufw allow 'Nginx Full' && sudo ufw enable`.
+Without HTTPS, passwords are sent unencrypted. That's acceptable on a trusted
+network; for public internet use, consider adding a domain + HTTPS later.
 
 ## 7. Deploying updates
 
@@ -180,8 +172,10 @@ re-runs `artisan optimize`, which rebuilds the config cache.
 
 - **`APP_KEY is not set`**: fill `APP_KEY` in `.env`, then `docker compose up -d`.
 - **502 Bad Gateway**: `docker compose logs app` (usually a DB or migration error).
-- **Login redirects back / CSRF 419 on http**: `SESSION_SECURE_COOKIE` must be
-  `false` until HTTPS is set up.
-- **Links use http:// behind HTTPS**: check `APP_URL` and that the host Nginx
-  sends `X-Forwarded-Proto`.
+- **Login redirects back / CSRF 419**: `SESSION_SECURE_COOKIE` must be `false`
+  (the site is plain http).
+- **Links or redirects drop the `:5000`**: check `APP_URL=http://SERVER_IP:5000`
+  in `.env`, then `docker compose restart app`.
+- **Page doesn't load at all**: port 5000 is blocked by the cloud firewall, or
+  `docker compose ps` shows `web` isn't running.
 - **Build killed on a 1 GB server**: add swap (`sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile`).

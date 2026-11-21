@@ -30,9 +30,8 @@ services:
     image: testing-soft-web:latest
     restart: unless-stopped
     ports:
-      # Default 80 serves the site directly. Set HTTP_BIND=127.0.0.1:8080 in .env
-      # when a host-level Nginx/Certbot handles HTTPS in front (DEPLOY.md, step 6).
-      - "${HTTP_BIND:-80}:80"
+      # Site is served at http://SERVER_IP:5000 (change HTTP_BIND in .env).
+      - "${HTTP_BIND:-5000}:80"
     volumes:
       - storage:/var/www/html/storage:ro
     depends_on:
