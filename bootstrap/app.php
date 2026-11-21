@@ -11,7 +11,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // In Docker the app is only reachable through the Nginx container (and
+        // optionally a host reverse proxy), so trust their X-Forwarded-* headers
+        // to generate correct https:// URLs.
+        $middleware->trustProxies(at: '*');
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
