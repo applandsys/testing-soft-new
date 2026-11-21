@@ -15,14 +15,14 @@
                         </a>
                         <ul class="treeview-menu">
 
-                            @if(auth()->user()->email=='mega@sgs.com')
+                            @if(auth()->user()->email=='labs@iaea.com')
                                <li><a href="{{route('admin.testpage',1)}}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Metal  Test</a></li>
                             @endif
 
-                            @if(auth()->user()->email=='megax@sgs.com')
+                            @if(auth()->user()->email=='labn@iaea.com')
                                 <li><a href="{{route('admin.testpage-one',1)}}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Metal  Test</a></li>
                             @endif
-                            @if(auth()->user()->email=='megam@sgs.com')
+                            @if(auth()->user()->email=='labp@iaea.com')
                                 <li><a href="{{route('admin.testpage-four',1)}}"><i class="icon-Commit"><span class="path1"></span><span class="path2"></span></i>Metal  Test</a></li>
                             @endif
 
